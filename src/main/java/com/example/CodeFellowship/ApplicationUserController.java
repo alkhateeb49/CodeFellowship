@@ -15,6 +15,7 @@ import org.springframework.web.servlet.view.RedirectView;
 
 import java.security.Principal;
 import java.util.ArrayList;
+import java.util.List;
 
 @Controller
 public class ApplicationUserController {
@@ -22,6 +23,8 @@ public class ApplicationUserController {
     ApplicationUserRepository applicationUserRepository;
     @Autowired
     BCryptPasswordEncoder bCryptPasswordEncoder;
+    @Autowired
+    PostRepository postRepository;
 
     @GetMapping("/signup")
     public String getSignUpPage(){
@@ -54,7 +57,10 @@ public class ApplicationUserController {
 
     @PostMapping("/perform_login")
     public String getUserProfilePage(Principal p, Model m){
+        ApplicationUser myProfile = applicationUserRepository.findByUsername(p.getName());
+        List<Post> posts =postRepository.findByOwnerId(myProfile.getId());
         m.addAttribute("user", ((UsernamePasswordAuthenticationToken)p).getPrincipal());
+        m.addAttribute("posts", posts);
         return "profile.html";
     }
 
